@@ -30,7 +30,6 @@ interface QueryParams {
   };
 }
 export default async function Page({ params }: QueryParams) {
-  // Wait for the artist
   const payload = await getPublication(params.publication_id);
 
   return (
