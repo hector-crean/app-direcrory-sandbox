@@ -1,11 +1,13 @@
+import { PublicationResponse } from "@/app/api/publication/[publication_id]/route";
+
 interface PublicationProps {
-  name: string;
+  data: PublicationResponse;
 }
 
-const Publication = (props: PublicationProps) => {
+const Publication = ({ data }: PublicationProps) => {
   return (
     <div>
-      <h1>{props.name}</h1>
+      <h1>{data.name}</h1>
     </div>
   );
 };
