@@ -1,65 +1,39 @@
+
+import { GetPublicationQueryParams, PublicationResponseSchema } from '@/app/api/publication/[publication_id]/route';
 import { Publication } from "@/components/Publication";
-import type { Metadata } from "next";
 import { Suspense } from "react";
+import styles from './page.module.css';
 
-type PublicationPayload = {
-  name: string;
-};
-async function getPublication(
-  publicationId: string
-): Promise<PublicationPayload> {
-  return {
-    name: `Name for ${publicationId}`,
-  };
-}
 
-async function getPublications(): Promise<PublicationPayload[]> {
-  return [
-    {
-      name: `Placeholder`,
-    },
-    {
-      name: `Placeholder`,
-    },
-  ];
-}
 
-interface QueryParams {
-  params: {
-    publication_id: string;
-  };
-}
-export default async function Page({ params }: QueryParams) {
-  const payload = await getPublication(params.publication_id);
+async function Page({ params }: GetPublicationQueryParams) {
+
+  const ENDPOINT = `${process.env.NEXT_API_BASE}/api/publication/${params.publication_id}`
+
+  const resp = await fetch(ENDPOINT, {
+    method: "GET",
+  });
+  const body = await resp.json()
+  const publication = PublicationResponseSchema.parse(body)
+
 
   return (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Publication {...payload} />
-      </Suspense>
-    </>
+
+
+    <main className={styles.main}>
+      <div className={styles.center}>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Publication data={publication} />
+        </Suspense>
+      </div>
+
+
+    </main>
+
+
   );
+
 }
 
-export async function generateStaticParams() {
-  const res = await getPublications();
 
-  return res.map((publication) => ({
-    slug: publication.name,
-  }));
-}
-
-export async function generateMetadata({
-  params,
-}: QueryParams): Promise<Metadata> {
-  const publication = await getPublication(params.publication_id);
-
-  return {
-    title: `${publication.name} | Next.js`,
-    description: `${publication.name} | Next.js`,
-    openGraph: {
-      title: `${publication.name} | Next.js`,
-      description: `${publication.name} | Next.js`,
-    },
-  };
-}
+export default Page;
