@@ -1,6 +1,7 @@
 import { PublicationResponse } from "@/app/api/publication/[publication_id]/route";
 import { Publication } from "@/components/Publication";
 import { Suspense } from "react";
+import styles from './page.module.css';
 
 interface QueryParams {
   params: {
