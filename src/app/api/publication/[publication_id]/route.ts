@@ -1,26 +1,37 @@
-import { NextApiRequest } from 'next'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
+import * as z from 'zod';
 
-type PublicationResponse = {
-  name: string
-}
 
-type QueryParams = {
-  params: {
-    publication_id: string
-  }
-}
 export async function GET(
-  req: NextApiRequest,
-  // res: NextApiResponse<MyData>,
-  { params }: QueryParams
-) {
+  req: NextRequest,
+ {params}: GetPublicationQueryParams
+): Promise<NextResponse<PublicationResponse>> {
 
+    const publicationResponse: PublicationResponse = PublicationResponseSchema.parse({
+      name: params.publication_id,
+    });
 
-  return new NextResponse<PublicationResponse>(JSON.stringify({ name: params.publication_id }), {
-    status: 200,
-  });
+    return NextResponse.json(publicationResponse)
+  
 }
 
-export type { PublicationResponse }
+/// types / schemas
+const PublicationResponseSchema = z.object({
+  name: z.string(),
+});
+
+type PublicationResponse = z.infer<typeof PublicationResponseSchema>;
+
+
+const GetPublicationQueryParamsSchema = z.object({
+  params: z.object({
+    publication_id: z.string(),
+  }),
+});
+
+
+type GetPublicationQueryParams = z.infer<typeof GetPublicationQueryParamsSchema>;
+
+export { GetPublicationQueryParamsSchema, PublicationResponseSchema };
+export type { GetPublicationQueryParams, PublicationResponse };
 
